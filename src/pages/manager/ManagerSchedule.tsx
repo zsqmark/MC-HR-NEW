@@ -24,6 +24,7 @@ import {
   validateShiftStartTime,
   formatTime12h,
 } from '../../utils/shiftTimes';
+import { WeeklyTimesheetExportModal } from '../../components/timesheet/WeeklyTimesheetExportModal';
 
 const DAYS: DayOfWeek[] = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
@@ -39,6 +40,7 @@ export const ManagerSchedule: React.FC = () => {
     deleteShift,
   } = useApp();
 
+  const [showWeeklyExportModal, setShowWeeklyExportModal] = useState(false);
   const [activeView, setActiveView] = useState<'csv_grid' | 'calendar_board'>('csv_grid');
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>('MON');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -147,6 +149,14 @@ export const ManagerSchedule: React.FC = () => {
               Weekly Day Columns
             </button>
           </div>
+
+          <button
+            onClick={() => setShowWeeklyExportModal(true)}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-sm shadow-emerald-200 cursor-pointer"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Export Weekly Timesheet (Excel)
+          </button>
 
           <button
             onClick={() => {
@@ -817,6 +827,12 @@ export const ManagerSchedule: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Weekly Timesheet Excel Export Modal */}
+      <WeeklyTimesheetExportModal
+        isOpen={showWeeklyExportModal}
+        onClose={() => setShowWeeklyExportModal(false)}
+      />
     </div>
   );
 };

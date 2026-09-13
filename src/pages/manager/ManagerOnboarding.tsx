@@ -363,7 +363,7 @@ export const ManagerOnboarding: React.FC = () => {
               <tr className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
                 <th className="p-3.5">Employee</th>
                 <th className="p-3.5">Employee Type</th>
-                <th className="p-3.5">Position & Rate</th>
+                <th className="p-3.5">Position</th>
                 <th className="p-3.5">Phone</th>
                 <th className="p-3.5">Induction Status</th>
                 <th className="p-3.5 text-right">Actions</th>
@@ -416,7 +416,6 @@ export const ManagerOnboarding: React.FC = () => {
 
                     <td className="p-3.5 text-slate-700">
                       <div>{staff.position}</div>
-                      <div className="text-[10px] text-slate-400 font-mono">${staff.hourlyRate?.toFixed(2) || '26.50'}/hr</div>
                     </td>
 
                     <td className="p-3.5 font-mono text-slate-600">

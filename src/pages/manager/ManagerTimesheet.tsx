@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ClockRecord } from '../../types';
 import { roundTimeTo15Minutes } from '../../utils/shiftTimes';
+import { WeeklyTimesheetExportModal } from '../../components/timesheet/WeeklyTimesheetExportModal';
+import { downloadWeeklyTimesheetExcel } from '../../utils/timesheetExport';
 import {
   Clock,
   CheckCircle2,
@@ -16,11 +18,13 @@ import {
   Edit2,
   X,
   Save,
+  Sparkles,
 } from 'lucide-react';
 
 export const ManagerTimesheet: React.FC = () => {
-  const { clockRecords, approveTimesheet, updateClockRecord } = useApp();
+  const { clockRecords, approveTimesheet, updateClockRecord, staffUsers, shifts } = useApp();
 
+  const [showWeeklyExportModal, setShowWeeklyExportModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingRecord, setEditingRecord] = useState<ClockRecord | null>(null);
@@ -139,11 +143,68 @@ export const ManagerTimesheet: React.FC = () => {
           )}
 
           <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 shadow-sm shadow-indigo-200"
+            onClick={() => setShowWeeklyExportModal(true)}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-sm shadow-emerald-200 cursor-pointer"
           >
-            <Download className="w-4 h-4" />
-            Export Timesheet CSV
+            <FileSpreadsheet className="w-4 h-4" />
+            Export Weekly Timesheet (Excel)
+          </button>
+
+          <button
+            onClick={handleExportCSV}
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 border border-slate-200 cursor-pointer"
+            title="Download raw audit clock logs as CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" />
+            Audit CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Weekly Working Hours Feature Banner */}
+      <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white p-5 rounded-2xl border border-emerald-800/40 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl">
+            <FileSpreadsheet className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-white">
+                Weekly Working Hours Spreadsheet Export
+              </h2>
+              <span className="text-[10px] uppercase tracking-wider font-bold bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                Excel .xlsx
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5 max-w-xl">
+              Modeled directly after the Malaya Corner weekly roster sheet: 7-day columns (MON–SUN), separate Start &amp; Finish punches per day, split shift lines, and clean bordered print layout.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0">
+          <button
+            onClick={() =>
+              downloadWeeklyTimesheetExcel({
+                weekDateRangeStr: '03/08/2026 - 09/08/2026',
+                mode: 'picture_reference',
+                staffUsers,
+                shifts,
+                clockRecords,
+              })
+            }
+            className="flex-1 md:flex-none px-3.5 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Quick Download (.xlsx)
+          </button>
+
+          <button
+            onClick={() => setShowWeeklyExportModal(true)}
+            className="flex-1 md:flex-none px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-xs transition-all shadow-md shadow-emerald-950/40 flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+            Preview &amp; Customize
           </button>
         </div>
       </div>
@@ -418,6 +479,12 @@ export const ManagerTimesheet: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Weekly Timesheet Excel Export Modal */}
+      <WeeklyTimesheetExportModal
+        isOpen={showWeeklyExportModal}
+        onClose={() => setShowWeeklyExportModal(false)}
+      />
     </div>
   );
 };

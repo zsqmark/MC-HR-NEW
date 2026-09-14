@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Eye,
 } from 'lucide-react';
+import { ChecklistPreviewModal } from '../../components/ChecklistPreviewModal';
 
 export const StaffOnboarding: React.FC = () => {
   const { activeStaff, onboardingRecords, submitOnboardingForm, setCurrentPage } = useApp();
@@ -46,6 +47,7 @@ export const StaffOnboarding: React.FC = () => {
 
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(1);
+  const [showChecklistPreview, setShowChecklistPreview] = useState(false);
 
   // Sync if existing data changes
   useEffect(() => {
@@ -81,19 +83,6 @@ export const StaffOnboarding: React.FC = () => {
     reader.readAsDataURL(fileObj);
   };
 
-  // Mock sample file trigger for rapid testing
-  const attachSampleDoc = (
-    field: 'q12_vevoDoc' | 'q13_foodHandlerDoc' | 'q14_tfnDoc' | 'q15_foodHygieneCert',
-    defaultName: string
-  ) => {
-    const meta: UploadedFileMeta = {
-      fileName: `${activeStaff.firstName}_${defaultName}`,
-      fileSize: '650 KB',
-      fileType: 'application/pdf',
-      uploadedAt: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
-    };
-    setFormData((prev) => ({ ...prev, [field]: meta }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -411,10 +400,20 @@ export const StaffOnboarding: React.FC = () => {
           {/* Q12: ID Upload */}
           <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
             <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
-              12. Please upload your identity / work authorization document below <span className="text-red-500">*</span>
+              12. Please upload your vevo emtitlement check below <span className="text-red-500">*</span>
             </label>
-            <p className="text-xs text-slate-600">
-              Please provide photo ID or employment authorization document for payroll profile verification.
+            <p className="text-xs text-slate-600 leading-relaxed">
+              For more information about VEVO, please click{' '}
+              <a
+                href="https://immi.homeaffairs.gov.au/visas/already-have-a-visa/check-visa-details-and-conditions/overview"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 hover:text-indigo-800 underline font-semibold inline-flex items-center gap-0.5"
+              >
+                here
+                <ExternalLink className="w-3 h-3 inline shrink-0" />
+              </a>
+              . By uploading your VEVO entitlement check, you authorize us to verify your visa status to confirm your right to work in Australia.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -428,14 +427,6 @@ export const StaffOnboarding: React.FC = () => {
                   onChange={(e) => e.target.files?.[0] && handleSimulatedFileUpload('q12_vevoDoc', e.target.files[0])}
                 />
               </label>
-
-              <button
-                type="button"
-                onClick={() => attachSampleDoc('q12_vevoDoc', 'ID_Work_Clearance.pdf')}
-                className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                + Attach Demo ID Document
-              </button>
             </div>
 
             {formData.q12_vevoDoc && (
@@ -450,12 +441,58 @@ export const StaffOnboarding: React.FC = () => {
           </div>
 
           {/* Q13: Food Handler Skills Checklist */}
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-            <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
-              13. Please sign this Food handler skills and knowledge checklist <span className="text-red-500">*</span>
-            </label>
-            <p className="text-xs text-slate-600">
-              Download the checklist in PDF format. Once signed, upload the completed PDF below.
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="text-xs font-bold text-slate-900 flex flex-wrap items-center gap-1.5">
+                <span>13. Please sign this</span>
+                <a
+                  href="/Food handler skills and knowledge checklist.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="Food handler skills and knowledge checklist.pdf"
+                  className="text-indigo-600 hover:text-indigo-800 underline decoration-indigo-300 hover:decoration-indigo-600 font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Click to download Food handler skills and knowledge checklist (PDF)"
+                >
+                  Food handler skills and knowledge checklist
+                  <ExternalLink className="w-3.5 h-3.5 text-indigo-500 inline shrink-0" />
+                </a>
+                <span className="text-red-500">*</span>
+              </label>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/Food handler skills and knowledge checklist.pdf"
+                  download="Food handler skills and knowledge checklist.pdf"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+                  title="Download PDF directly"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowChecklistPreview(true)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer"
+                  title="View and preview checklist on screen"
+                >
+                  <Eye className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Preview</span>
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 flex flex-wrap items-center gap-1">
+              <span>Download the</span>
+              <a
+                href="/Food handler skills and knowledge checklist.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="Food handler skills and knowledge checklist.pdf"
+                className="text-indigo-600 hover:text-indigo-800 underline font-semibold inline-flex items-center gap-0.5"
+              >
+                Food handler skills and knowledge checklist
+              </a>
+              <span>in PDF format. Once signed, upload the completed PDF below.</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -469,14 +506,6 @@ export const StaffOnboarding: React.FC = () => {
                   onChange={(e) => e.target.files?.[0] && handleSimulatedFileUpload('q13_foodHandlerDoc', e.target.files[0])}
                 />
               </label>
-
-              <button
-                type="button"
-                onClick={() => attachSampleDoc('q13_foodHandlerDoc', 'Signed_Food_Handler_Checklist.pdf')}
-                className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                + Attach Demo Signed Checklist
-              </button>
             </div>
 
             {formData.q13_foodHandlerDoc && (
@@ -510,14 +539,6 @@ export const StaffOnboarding: React.FC = () => {
                   onChange={(e) => e.target.files?.[0] && handleSimulatedFileUpload('q14_tfnDoc', e.target.files[0])}
                 />
               </label>
-
-              <button
-                type="button"
-                onClick={() => attachSampleDoc('q14_tfnDoc', 'Filled_TFN_Declaration.pdf')}
-                className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                + Attach Demo TFN Form
-              </button>
             </div>
 
             {formData.q14_tfnDoc && (
@@ -555,14 +576,6 @@ export const StaffOnboarding: React.FC = () => {
                   onChange={(e) => e.target.files?.[0] && handleSimulatedFileUpload('q15_foodHygieneCert', e.target.files[0])}
                 />
               </label>
-
-              <button
-                type="button"
-                onClick={() => attachSampleDoc('q15_foodHygieneCert', 'Food_Hygiene_Certificate.pdf')}
-                className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                + Attach Demo Certificate
-              </button>
             </div>
 
             {formData.q15_foodHygieneCert && (
@@ -592,6 +605,13 @@ export const StaffOnboarding: React.FC = () => {
           </button>
         </div>
       </form>
+
+      {/* Checklist Preview & Print Modal */}
+      <ChecklistPreviewModal
+        isOpen={showChecklistPreview}
+        onClose={() => setShowChecklistPreview(false)}
+        pdfUrl="/Food handler skills and knowledge checklist.pdf"
+      />
     </div>
   );
 };

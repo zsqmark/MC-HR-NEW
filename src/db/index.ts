@@ -1,15 +1,19 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema.ts';
 
 // Add global connection pool caching to persist across hot-reloads
 declare global {
   var _postgresPool: Pool | undefined;
+  var _drizzleDb: NodePgDatabase<typeof schema> | undefined;
 }
 
-// Function to create or retrieve the connection pool.
-export const createPool = () => {
+// Function to create or retrieve the connection pool lazily.
+export const getPool = (): Pool => {
   if (!global._postgresPool) {
+    if (!process.env.SQL_HOST) {
+      throw new Error('SQL_HOST environment variable is not configured');
+    }
     global._postgresPool = new Pool({
       host: process.env.SQL_HOST,
       user: process.env.SQL_USER,
@@ -27,8 +31,12 @@ export const createPool = () => {
   return global._postgresPool;
 };
 
-// Create or retrieve the pool instance.
-const pool = createPool();
+// Initialize Drizzle with the pool and schema lazily.
+export const getDb = () => {
+  if (!global._drizzleDb) {
+    const pool = getPool();
+    global._drizzleDb = drizzle(pool, { schema });
+  }
+  return global._drizzleDb;
+};
 
-// Initialize Drizzle with the pool and schema.
-export const db = drizzle(pool, { schema });

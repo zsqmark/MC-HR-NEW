@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldAlert, FileText, ArrowRight, UserCheck, AlertCircle } from 'lucide-react';
+import { ShieldAlert, FileText, ArrowRight, UserCheck, AlertCircle, ExternalLink } from 'lucide-react';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -48,7 +48,16 @@ export const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) =>
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                  Signed Food Handler Skills Checklist
+                  <a
+                    href="/Food handler skills and knowledge checklist.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download="Food handler skills and knowledge checklist.pdf"
+                    className="hover:text-indigo-600 underline decoration-slate-300 hover:decoration-indigo-600 inline-flex items-center gap-1 text-slate-700 transition-colors"
+                  >
+                    Food handler skills and knowledge checklist
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>

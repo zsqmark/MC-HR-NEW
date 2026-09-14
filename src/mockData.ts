@@ -876,6 +876,19 @@ export const INITIAL_CHECKLISTS: ChecklistItem[] = [
 
 export const INITIAL_DOCUMENTS: RestaurantDocument[] = [
   {
+    id: 'doc-food-handler-checklist',
+    title: 'Food handler skills and knowledge checklist',
+    category: 'Food Safety & Hygiene',
+    fileName: 'Food handler skills and knowledge checklist.pdf',
+    fileSize: '920 KB',
+    uploadedBy: 'Manager (Mark Zhang)',
+    uploadedFor: 'all',
+    uploadedAt: '2026-01-10',
+    description: 'Official bilingual (English & Chinese) Food handler skills and knowledge checklist for Standard 3.2.2A compliance.',
+    fileUrl: '/Food handler skills and knowledge checklist.pdf',
+    isProtected: true,
+  },
+  {
     id: 'doc-1',
     title: 'Malaya Corner Staff Handbook & Workplace Code 2026',
     category: 'Policy & Handbook',
@@ -931,6 +944,7 @@ export const INITIAL_DOCUMENTS: RestaurantDocument[] = [
     uploadedFor: 'staff-john',
     uploadedAt: '2026-02-14',
     description: 'Submitted during staff onboarding. Standard 3.2.2A verification.',
+    fileUrl: '/Food handler skills and knowledge checklist.pdf',
   },
   {
     id: 'doc-sub-john-3',

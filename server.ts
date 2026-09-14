@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { requireAuth, AuthRequest } from "./src/middleware/auth.ts";
 import { getOrCreateUser, getUsers } from "./src/db/users.ts";
@@ -43,6 +44,18 @@ async function startServer() {
       res.status(500).json({ error: error.message || "Failed to fetch users" });
     }
   });
+
+  // Explicit download endpoint for Food handler skills and knowledge checklist
+  const handleChecklistDownload = (req: express.Request, res: express.Response) => {
+    const pubFile = path.join(process.cwd(), "public", "Food handler skills and knowledge checklist.pdf");
+    const distFile = path.join(process.cwd(), "dist", "Food handler skills and knowledge checklist.pdf");
+    const targetFile = fs.existsSync(pubFile) ? pubFile : distFile;
+    res.download(targetFile, "Food handler skills and knowledge checklist.pdf");
+  };
+
+  app.get("/Food handler skills and knowledge checklist.pdf", handleChecklistDownload);
+  app.get("/Food%20handler%20skills%20and%20knowledge%20checklist.pdf", handleChecklistDownload);
+  app.get("/Food_handler_skills_and_knowledge_checklist.pdf", handleChecklistDownload);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

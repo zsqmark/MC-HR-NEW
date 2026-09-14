@@ -1,9 +1,10 @@
-import { db } from './index.ts';
+import { getDb } from './index.ts';
 import { users } from './schema.ts';
 import { eq } from 'drizzle-orm';
 
 export async function getOrCreateUser(uid: string, email: string, name?: string) {
   try {
+    const db = getDb();
     const result = await db.insert(users)
       .values({
         uid,
@@ -28,6 +29,7 @@ export async function getOrCreateUser(uid: string, email: string, name?: string)
 
 export async function getUsers() {
   try {
+    const db = getDb();
     return await db.select().from(users);
   } catch (error) {
     console.error("Database query failed in getUsers:", error);
@@ -37,6 +39,7 @@ export async function getUsers() {
 
 export async function getUserByUid(uid: string) {
   try {
+    const db = getDb();
     const results = await db.select().from(users).where(eq(users.uid, uid));
     return results[0] || null;
   } catch (error) {

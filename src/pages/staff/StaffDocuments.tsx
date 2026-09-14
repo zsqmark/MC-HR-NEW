@@ -12,12 +12,14 @@ import {
   Search,
   Filter,
 } from 'lucide-react';
+import { ChecklistPreviewModal } from '../../components/ChecklistPreviewModal';
 
 export const StaffDocuments: React.FC = () => {
   const { documents, activeStaff } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
+  const [showChecklistPreview, setShowChecklistPreview] = useState(false);
 
   // Security Rule for staff:
   // "However, the staff can only see their own submission and the file manager uploaded."
@@ -170,20 +172,28 @@ export const StaffDocuments: React.FC = () => {
 
                 <div className="pt-4 mt-2 flex items-center gap-2">
                   <button
-                    onClick={() => setPreviewDoc(doc.title)}
-                    className="flex-1 py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                    onClick={() => {
+                      if (doc.fileName.toLowerCase().includes('food_handler') || doc.title.toLowerCase().includes('food handler')) {
+                        setShowChecklistPreview(true);
+                      } else {
+                        setPreviewDoc(doc.title);
+                      }
+                    }}
+                    className="flex-1 py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     Preview
                   </button>
 
-                  <button
-                    onClick={() => alert(`Downloading "${doc.fileName}" (${doc.fileSize}).`)}
-                    className="py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5"
+                  <a
+                    href={doc.fileUrl || '/Food handler skills and knowledge checklist.pdf'}
+                    download={doc.fileName}
+                    className="py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                    title={`Download ${doc.fileName}`}
                   >
                     <Download className="w-3.5 h-3.5" />
                     Download
-                  </button>
+                  </a>
                 </div>
               </div>
             );
@@ -232,6 +242,13 @@ export const StaffDocuments: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Official Checklist Preview & Download Modal */}
+      <ChecklistPreviewModal
+        isOpen={showChecklistPreview}
+        onClose={() => setShowChecklistPreview(false)}
+        pdfUrl="/Food handler skills and knowledge checklist.pdf"
+      />
     </div>
   );
 };

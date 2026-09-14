@@ -216,13 +216,15 @@ export const ManagerDocuments: React.FC = () => {
               </div>
 
               <div className="pt-4 mt-3 flex items-center gap-2 border-t border-slate-100">
-                <button
-                  onClick={() => alert(`Downloading "${doc.fileName}" (${doc.fileSize})`)}
+                <a
+                  href={doc.fileUrl || '/Food handler skills and knowledge checklist.pdf'}
+                  download={doc.fileName}
                   className="flex-1 py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  title={`Download ${doc.fileName}`}
                 >
                   <Download className="w-3.5 h-3.5" />
                   Download
-                </button>
+                </a>
 
                 <button
                   onClick={() => deleteDocument(doc.id)}

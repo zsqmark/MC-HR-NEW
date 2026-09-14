@@ -783,14 +783,37 @@ export const ManagerOnboarding: React.FC = () => {
 
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
                       <div>
-                        <div className="font-bold text-slate-900">13. Food Handler Checklist</div>
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                          <span>13.</span>
+                          <a
+                            href="/Food handler skills and knowledge checklist.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download="Food handler skills and knowledge checklist.pdf"
+                            className="text-indigo-600 hover:text-indigo-800 underline font-bold inline-flex items-center gap-1"
+                            title="Download Food handler skills and knowledge checklist"
+                          >
+                            Food handler skills and knowledge checklist
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
                         <div className="text-[11px] text-slate-500 font-mono">
                           {selectedDossier.q13_foodHandlerDoc?.fileName || 'Pending upload'}
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        Verified
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href="/Food handler skills and knowledge checklist.pdf"
+                          download="Food handler skills and knowledge checklist.pdf"
+                          className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold p-1 hover:bg-indigo-50 rounded"
+                          title="Download document"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Verified
+                        </span>
+                      </div>
                     </div>
 
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200 flex items-center justify-between">

@@ -162,7 +162,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.TASKS);
-    return saved ? JSON.parse(saved) : INITIAL_TASKS;
+    const list: TaskItem[] = saved ? JSON.parse(saved) : INITIAL_TASKS;
+    return list.filter((t) => t.id !== 'task-4');
   });
 
   const [checklists, setChecklists] = useState<ChecklistItem[]>(() => {

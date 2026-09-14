@@ -36,12 +36,13 @@ export const StaffHome: React.FC = () => {
     (s) => s.assignedStaffId === activeStaff.id
   );
 
-  // My tasks (assigned directly or open to team)
+  // My tasks (assigned directly or open to team, excluding weekly recurring tasks)
   const myTasks = tasks.filter(
     (t) =>
-      t.assignedToStaffId === activeStaff.id ||
-      !t.assignedToStaffId ||
-      t.assignedToStaffId === 'unassigned'
+      t.taskType !== 'recurring_weekly' &&
+      (t.assignedToStaffId === activeStaff.id ||
+        !t.assignedToStaffId ||
+        t.assignedToStaffId === 'unassigned')
   );
   const pendingTasks = myTasks.filter((t) => !t.isCompleted);
 
@@ -202,7 +203,7 @@ export const StaffHome: React.FC = () => {
                   <div className="flex items-center justify-between gap-1">
                     <span className="font-medium text-slate-800 truncate">{t.title}</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 shrink-0">
-                      {t.taskType === 'recurring_weekly' ? 'Weekly' : 'One-Off'}
+                      Shift Task
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-500">

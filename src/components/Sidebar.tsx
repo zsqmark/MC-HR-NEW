@@ -140,58 +140,6 @@ export const Sidebar: React.FC = () => {
             </p>
           </div>
         </div>
-
-        {/* 2. Role & Access Level Badge / Toggle */}
-        {isStaffUser ? (
-          /* Staff View: Staff CANNOT switch to manager view */
-          <div className="mt-4 px-3 py-2 rounded-xl bg-slate-100/80 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-slate-900 font-bold">
-              <User className="w-3.5 h-3.5 text-indigo-600" />
-              Staff Portal
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
-              Staff Access Only
-            </span>
-          </div>
-        ) : (
-          /* Manager: Manager can switch between Manager View and Staff Preview */
-          <div className="mt-4 space-y-1.5">
-            <div className="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 text-xs font-semibold">
-              <button
-                onClick={() => switchRole('manager')}
-                className={`flex-1 py-1.5 rounded-lg text-center transition-all cursor-pointer ${
-                  currentRole === 'manager'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Manager View
-              </button>
-              <button
-                onClick={() => switchRole('staff')}
-                className={`flex-1 py-1.5 rounded-lg text-center transition-all cursor-pointer ${
-                  currentRole === 'staff'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Staff Preview
-              </button>
-            </div>
-
-            {currentRole === 'staff' && (
-              <div className="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 flex items-center justify-between">
-                <span>Previewing as Staff</span>
-                <button
-                  onClick={() => switchRole('manager')}
-                  className="font-bold text-amber-950 underline hover:text-indigo-600 cursor-pointer"
-                >
-                  Exit Preview
-                </button>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* 3. Active User Card & Switcher */}

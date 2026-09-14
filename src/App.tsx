@@ -163,7 +163,7 @@ const MainContent: React.FC = () => {
               <span>Restaurant HR, Workforce Roster, & Operations</span>
             </div>
             <div className="text-slate-400">
-              Sunnybank Plaza, QLD • Malaya Corner
+              Sunnybank Market Square, QLD • Malaya Corner
             </div>
           </div>
         </footer>

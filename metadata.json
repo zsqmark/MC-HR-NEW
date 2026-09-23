@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix 7shifts Restaurant HR & Operations",
+  "description": "All-in-one restaurant workforce management and HR platform for scheduling, time tracking, daily checklists, onboarding, and documents.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

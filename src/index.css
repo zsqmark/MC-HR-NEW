@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-indigo-50: #fefbf3;
+  --color-indigo-100: #fdf5df;
+  --color-indigo-200: #fae5b6;
+  --color-indigo-300: #f7d383;
+  --color-indigo-400: #f4c357;
+  --color-indigo-500: #F1B434;
+  --color-indigo-600: #F1B434;
+  --color-indigo-700: #df9f1e;
+  --color-indigo-800: #ad7711;
+  --color-indigo-900: #7e5207;
+  --color-indigo-950: #472c03;
+
+  --color-theme: #F1B434;
+  --color-theme-dark: #df9f1e;
+}
+
+:root {
+  --theme-color: #F1B434;
+}
+
+/* Ensure strong, high-contrast, accessible text on #F1B434 surfaces */
+.bg-indigo-600,
+.bg-indigo-600.text-white,
+.bg-indigo-600 .text-white,
+.hover\:bg-indigo-700:hover {
+  color: #1a160d !important;
+}
+
+.bg-indigo-600 svg {
+  color: #1a160d;
+}
+
+/* For text-indigo-600 on light backgrounds, provide rich accessible contrast */
+.text-indigo-600 {
+  color: #a8720c;
+}
+
+.text-indigo-700 {
+  color: #8c5d07;
+}
+
+.text-indigo-800 {
+  color: #704904;
+}
+
+.text-indigo-900 {
+  color: #553602;
+}
+
+/* Focus rings & glow */
+.ring-indigo-500:focus,
+.focus\:ring-indigo-500:focus {
+  --tw-ring-color: #F1B434 !important;
+}
+
+.shadow-indigo-200 {
+  box-shadow: 0 4px 14px 0 rgba(241, 180, 52, 0.28);
+}
+
+::selection {
+  background-color: #F1B434;
+  color: #1a160d;
+}
+

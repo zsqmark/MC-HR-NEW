@@ -57,6 +57,16 @@ async function startServer() {
   app.get("/Food%20handler%20skills%20and%20knowledge%20checklist.pdf", handleChecklistDownload);
   app.get("/Food_handler_skills_and_knowledge_checklist.pdf", handleChecklistDownload);
 
+  // Explicit download endpoint for TFN declaration form
+  const handleTfnDownload = (req: express.Request, res: express.Response) => {
+    const pubFile = path.join(process.cwd(), "public", "TFN_declaration_form_N3092.pdf");
+    const distFile = path.join(process.cwd(), "dist", "TFN_declaration_form_N3092.pdf");
+    const targetFile = fs.existsSync(pubFile) ? pubFile : distFile;
+    res.download(targetFile, "TFN_declaration_form_N3092.pdf");
+  };
+
+  app.get("/TFN_declaration_form_N3092.pdf", handleTfnDownload);
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

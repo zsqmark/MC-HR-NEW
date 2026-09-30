@@ -8,7 +8,6 @@ import {
   RotateCcw,
   Sparkles,
   ShieldCheck,
-  Lock,
   Wine,
   Utensils,
   AlertCircle,
@@ -44,7 +43,6 @@ export const StaffChecklist: React.FC = () => {
 
   const [activeCategory, setActiveCategory] = useState<'all' | 'Opening' | 'Mid-Shift Food Safety' | 'Closing'>('all');
   const [tempInputs, setTempInputs] = useState<Record<string, string>>({});
-  const [attemptedBarAccess, setAttemptedBarAccess] = useState(false);
 
   // Photo state
   const [photoErrors, setPhotoErrors] = useState<Record<string, string>>({});
@@ -72,15 +70,7 @@ export const StaffChecklist: React.FC = () => {
   const totalCompleted = roleSetChecklists.filter((c) => c.isCompleted).length;
   const percent = Math.round((totalCompleted / (roleSetChecklists.length || 1)) * 100) || 0;
 
-  // Wait staff cannot access bar staff checklist
-  const isWaitStaffLockedOut = staffType === 'wait_staff' && selectedRoleSet === 'bar_staff' && !isManager;
-
   const handleTabClick = (targetSet: 'bar_staff' | 'wait_staff') => {
-    if (staffType === 'wait_staff' && targetSet === 'bar_staff' && !isManager) {
-      setAttemptedBarAccess(true);
-      return;
-    }
-    setAttemptedBarAccess(false);
     setSelectedRoleSet(targetSet);
     setActiveCategory('all');
   };
@@ -140,8 +130,6 @@ export const StaffChecklist: React.FC = () => {
   };
 
   const handleCheck = (item: ChecklistItem, requiresTemp?: boolean) => {
-    if (isWaitStaffLockedOut) return;
-
     // Check mandatory photo requirement
     if (!item.isCompleted && item.requiresPhoto) {
       const currentPhotosCount = (item.photos || []).length;
@@ -213,9 +201,6 @@ export const StaffChecklist: React.FC = () => {
             >
               <Wine className="w-4 h-4" />
               <span>Bar Staff Checklist</span>
-              {staffType === 'wait_staff' && !isManager && (
-                <Lock className="w-3 h-3 text-slate-400" />
-              )}
               {selectedRoleSet === 'bar_staff' && (
                 <span className="bg-amber-700/80 text-amber-100 text-[10px] px-2 py-0.5 rounded-full font-mono">
                   {checklists.filter((c) => (c.roleSet || 'bar_staff') === 'bar_staff' && c.isCompleted).length}/
@@ -276,40 +261,10 @@ export const StaffChecklist: React.FC = () => {
             </span>
           </div>
         )}
-
-        {staffType === 'wait_staff' && attemptedBarAccess && (
-          <div className="mt-3 p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <div className="font-bold text-sm text-amber-900 flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5" />
-                Access Restricted: Bar Staff Checklist
-              </div>
-              <p className="text-amber-800">
-                You are currently signed in as <strong>Wait Staff</strong>. Restaurant policy strictly states:
-                <em> "Bar staff can do wait staff job, but not other way around."</em>
-              </p>
-              <p className="text-[11px] text-amber-700">
-                Wait staff are not certified for commercial espresso machine calibration, draught glycol chillers, or underbench bar refrigeration. Please complete your assigned <strong>Wait Staff Checklist</strong>.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setAttemptedBarAccess(false);
-                  setSelectedRoleSet('wait_staff');
-                }}
-                className="mt-1 px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
-              >
-                Return to Wait Staff Checklist
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Category Tabs & Reset Action */}
-      {!isWaitStaffLockedOut && (
-        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-200 pb-2">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveCategory('all')}
@@ -355,11 +310,9 @@ export const StaffChecklist: React.FC = () => {
             <span>Reset {selectedRoleSet === 'bar_staff' ? 'Bar' : 'Wait'} Checklist</span>
           </button>
         </div>
-      )}
 
       {/* Checklist items */}
-      {!isWaitStaffLockedOut ? (
-        <div className="space-y-3">
+      <div className="space-y-3">
           {filteredItems.map((item) => {
             return (
               <div
@@ -628,25 +581,7 @@ export const StaffChecklist: React.FC = () => {
               </div>
             );
           })}
-        </div>
-      ) : (
-        <div className="p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-3">
-          <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
-            <Lock className="w-6 h-6" />
-          </div>
-          <h2 className="text-base font-bold text-slate-900">Wait Staff Cannot Perform Bar Operations</h2>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            According to Malaya Corner restaurant staffing rules, bar staff can perform wait staff floor duties, but wait staff cannot operate the bar station.
-          </p>
-          <button
-            type="button"
-            onClick={() => setSelectedRoleSet('wait_staff')}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer"
-          >
-            Switch to Wait Staff Checklist
-          </button>
-        </div>
-      )}
+      </div>
 
       {/* Fullscreen Photo Lightbox / Preview Modal */}
       {previewingPhoto && (

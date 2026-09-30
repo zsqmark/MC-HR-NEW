@@ -21,6 +21,7 @@ import {
   Lock,
   KeyRound,
   AlertCircle,
+  Users,
 } from 'lucide-react';
 
 interface NavItem {
@@ -82,7 +83,7 @@ export const Sidebar: React.FC = () => {
     { name: 'Weekly Schedule', icon: Calendar },
     { name: 'Timesheet', icon: Clock },
     { name: 'Task', icon: CheckSquare },
-    { name: 'Onboarding Progress', icon: UserCheck },
+    { name: 'Staffs', icon: Users },
     { name: 'Documents', icon: FolderLock },
   ];
 

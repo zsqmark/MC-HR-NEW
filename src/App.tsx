@@ -46,7 +46,7 @@ const MainContent: React.FC = () => {
   const renderContent = () => {
     if (effectiveRole === 'staff') {
       // If a staff user attempts to view manager administrative pages, trigger AccessDenied
-      const managerOnlyPages = ['Weekly Schedule', 'Timesheet', 'Task', 'Onboarding Progress'];
+      const managerOnlyPages = ['Weekly Schedule', 'Timesheet', 'Task', 'Staffs', 'Onboarding Progress'];
       if (managerOnlyPages.includes(currentPage)) {
         return <AccessDenied attemptedPage={currentPage} />;
       }
@@ -82,6 +82,7 @@ const MainContent: React.FC = () => {
           return <ManagerTimesheet />;
         case 'Task':
           return <ManagerTasks />;
+        case 'Staffs':
         case 'Onboarding Progress':
           return <ManagerOnboarding />;
         case 'Documents':

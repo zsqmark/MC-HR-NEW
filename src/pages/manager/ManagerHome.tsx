@@ -151,7 +151,7 @@ export const ManagerHome: React.FC = () => {
             {pendingOnboardingStaff.map((s) => s.firstName).join(', ') || 'All verified'}
           </p>
           <button
-            onClick={() => setCurrentPage('Onboarding Progress')}
+            onClick={() => setCurrentPage('Staffs')}
             className="mt-3 text-xs font-bold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1 transition-colors cursor-pointer"
           >
             Review Forms <ArrowRight className="w-3 h-3" />
@@ -233,7 +233,7 @@ export const ManagerHome: React.FC = () => {
                   Chloe Lin has been added but has not completed the 15-question onboarding submission and banking setup.
                 </p>
                 <button
-                  onClick={() => setCurrentPage('Onboarding Progress')}
+                  onClick={() => setCurrentPage('Staffs')}
                   className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] rounded-lg transition-colors shadow-xs shadow-indigo-200 cursor-pointer"
                 >
                   View Onboarding Status

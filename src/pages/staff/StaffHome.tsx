@@ -1,14 +1,9 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
-  Calendar,
   Clock,
-  CheckSquare,
-  ArrowRight,
-  ShieldCheck,
   AlertCircle,
   Sparkles,
-  CheckCircle2,
   FileText,
   Wine,
   Utensils,
@@ -17,34 +12,16 @@ import {
 export const StaffHome: React.FC = () => {
   const {
     activeStaff,
-    shifts,
     clockRecords,
-    tasks,
     setCurrentPage,
     clockIn,
     clockOut,
-    confirmTaskDone,
   } = useApp();
 
   // Active clock record
   const activeRecord = clockRecords.find(
     (r) => r.staffId === activeStaff.id && r.status === 'clocked_in'
   );
-
-  // Today's scheduled shifts for this staff
-  const todayShifts = shifts.filter(
-    (s) => s.assignedStaffId === activeStaff.id
-  );
-
-  // My tasks (assigned directly or open to team, excluding weekly recurring tasks)
-  const myTasks = tasks.filter(
-    (t) =>
-      t.taskType !== 'recurring_weekly' &&
-      (t.assignedToStaffId === activeStaff.id ||
-        !t.assignedToStaffId ||
-        t.assignedToStaffId === 'unassigned')
-  );
-  const pendingTasks = myTasks.filter((t) => !t.isCompleted);
 
   return (
     <div className="space-y-6">
@@ -131,106 +108,6 @@ export const StaffHome: React.FC = () => {
           </button>
         </div>
       )}
-
-      {/* Highlight Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Card 1: My Next Shifts */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Upcoming Shifts
-              </span>
-              <Calendar className="w-4 h-4 text-indigo-600" />
-            </div>
-            <div className="text-2xl font-bold text-slate-900 mb-1">
-              {todayShifts.length} Shifts Scheduled
-            </div>
-            <p className="text-xs text-slate-500">
-              Across lunch (11:15/11:30) and dinner (16:45/17:15) services this week.
-            </p>
-
-            <div className="mt-4 space-y-2">
-              {todayShifts.slice(0, 2).map((s) => (
-                <div
-                  key={s.id}
-                  className="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100 flex items-center justify-between text-xs"
-                >
-                  <span className="font-bold text-slate-800">
-                    {s.day} • {s.shiftType.toUpperCase()}
-                  </span>
-                  <span className="font-mono text-indigo-700 font-semibold">
-                    {s.startTime} start
-                  </span>
-                </div>
-              ))}
-              {todayShifts.length === 0 && (
-                <div className="text-xs text-slate-400 italic py-2">No assigned shifts yet. Check My Schedule.</div>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentPage('My Schedule')}
-            className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 pt-2 border-t border-slate-100"
-          >
-            View Weekly Roster <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* Card 2: My Tasks */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Assigned Tasks
-              </span>
-              <CheckSquare className="w-4 h-4 text-indigo-600" />
-            </div>
-            <div className="text-2xl font-bold text-slate-900 mb-1">
-              {pendingTasks.length} Pending
-            </div>
-            <p className="text-xs text-slate-500">
-              {myTasks.length - pendingTasks.length} completed today. Assigned by Supervisor Mark Zhang.
-            </p>
-
-            <div className="mt-4 space-y-2">
-              {pendingTasks.slice(0, 2).map((t) => (
-                <div
-                  key={t.id}
-                  className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="font-medium text-slate-800 truncate">{t.title}</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 shrink-0">
-                      Shift Task
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="text-slate-600">
-                      {t.assignedToStaffId === activeStaff.id ? 'Assigned to you' : 'Open Team Task'}
-                    </span>
-                    <span className="text-slate-400 font-mono truncate max-w-[120px]">{t.dueDate}</span>
-                  </div>
-                </div>
-              ))}
-              {pendingTasks.length === 0 && (
-                <div className="text-xs text-emerald-700 font-medium py-2 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  All assigned and team tasks are completed!
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentPage('My Task')}
-            className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 pt-2 border-t border-slate-100"
-          >
-            Manage Tasks <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
 
       {/* Staff Operational Announcements & Shift Policy */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">

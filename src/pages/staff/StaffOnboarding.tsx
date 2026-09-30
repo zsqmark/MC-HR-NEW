@@ -520,12 +520,49 @@ export const StaffOnboarding: React.FC = () => {
           </div>
 
           {/* Q14: TFN Declaration Form */}
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-            <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
-              14. Please fill out the TFN declaration form <span className="text-red-500">*</span>
-            </label>
-            <p className="text-xs text-slate-600">
-              Download the form in PDF format using the official ATO template. Once completed, upload the completed PDF below.
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="text-xs font-bold text-slate-900 flex flex-wrap items-center gap-1.5">
+                <span>14. Please fill out the</span>
+                <a
+                  href="/TFN_declaration_form_N3092.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="TFN_declaration_form_N3092.pdf"
+                  className="text-indigo-600 hover:text-indigo-800 underline decoration-indigo-300 hover:decoration-indigo-600 font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Click to download TFN declaration form (PDF)"
+                >
+                  TFN declaration form
+                  <ExternalLink className="w-3.5 h-3.5 text-indigo-500 inline shrink-0" />
+                </a>
+                <span className="text-red-500">*</span>
+              </label>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/TFN_declaration_form_N3092.pdf"
+                  download="TFN_declaration_form_N3092.pdf"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+                  title="Download official ATO TFN declaration form (NAT 3092)"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Form</span>
+                </a>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 flex flex-wrap items-center gap-1">
+              <span>Download the</span>
+              <a
+                href="/TFN_declaration_form_N3092.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="TFN_declaration_form_N3092.pdf"
+                className="text-indigo-600 hover:text-indigo-800 underline font-semibold inline-flex items-center gap-0.5"
+              >
+                TFN declaration form (NAT 3092)
+              </a>
+              <span>in PDF format using the official ATO template. Once completed, upload the completed PDF below.</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">

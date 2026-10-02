@@ -16,13 +16,20 @@ import {
   CreditCard,
   ExternalLink,
   Eye,
+  KeyRound,
+  Shield,
 } from 'lucide-react';
 import { ChecklistPreviewModal } from '../../components/ChecklistPreviewModal';
 
 export const StaffOnboarding: React.FC = () => {
-  const { activeStaff, onboardingRecords, submitOnboardingForm, setCurrentPage } = useApp();
+  const { activeStaff, onboardingRecords, submitOnboardingForm, updateStaffPin, setCurrentPage } = useApp();
 
   const existingData = onboardingRecords[activeStaff.id];
+
+  const [pinInput, setPinInput] = useState(activeStaff.pin || '');
+  const [pinConfirm, setPinConfirm] = useState(activeStaff.pin || '');
+  const [pinSuccessMessage, setPinSuccessMessage] = useState('');
+  const [pinError, setPinError] = useState('');
 
   const [formData, setFormData] = useState<OnboardingFormData>(() => {
     if (existingData) return existingData;
@@ -84,11 +91,45 @@ export const StaffOnboarding: React.FC = () => {
   };
 
 
+  const handleSavePinNow = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    setPinError('');
+    setPinSuccessMessage('');
+
+    const clean = pinInput.trim();
+    if (!/^\d{4}$/.test(clean)) {
+      setPinError('Security PIN must be exactly 4 numeric digits (e.g. 1024).');
+      return;
+    }
+
+    if (clean !== pinConfirm.trim()) {
+      setPinError('PIN confirmation does not match. Please verify both fields.');
+      return;
+    }
+
+    updateStaffPin(activeStaff.id, clean);
+    setPinSuccessMessage(`Security PIN successfully updated to ${clean}! You can use this PIN at the workforce terminal.`);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setPinError('');
+
+    const cleanPin = pinInput.trim();
+    if (cleanPin) {
+      if (!/^\d{4}$/.test(cleanPin)) {
+        setPinError('Please enter a valid 4-digit numeric Security PIN.');
+        return;
+      }
+      if (cleanPin !== pinConfirm.trim()) {
+        setPinError('Security PIN and Confirmation PIN do not match.');
+        return;
+      }
+      updateStaffPin(activeStaff.id, cleanPin);
+    }
 
     // Auto-fill mock files if user did not upload to allow convenient 1-click completion
-    const finalized = { ...formData };
+    const finalized = { ...formData, securityPin: cleanPin || activeStaff.pin };
     if (!finalized.q12_vevoDoc) {
       finalized.q12_vevoDoc = {
         fileName: `${activeStaff.firstName}_${activeStaff.lastName}_ID_Clearance.pdf`,
@@ -624,6 +665,116 @@ export const StaffOnboarding: React.FC = () => {
                 <span className="text-[10px] text-emerald-700">Ready</span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Section 4: Terminal Security PIN Setup (Staff Self-Service) */}
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">
+                <KeyRound className="w-4 h-4" />
+                Section 4: Terminal Security & Authentication
+              </div>
+              <h2 className="text-lg font-bold text-slate-900">
+                Workforce Terminal Security PIN
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Set up your personal 4-digit PIN for signing in at restaurant touch terminals to clock in, complete tasks, and sign off station checklists.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs shrink-0">
+              <Lock className="w-3.5 h-3.5 text-slate-500" />
+              <span className="text-slate-600">Current PIN:</span>
+              <span className="font-mono font-bold text-indigo-700">
+                {activeStaff.pin ? activeStaff.pin : 'Not Configured'}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                <span>Set 4-Digit Security PIN <span className="text-red-500">*</span></span>
+                <span className="text-[10px] font-normal text-slate-400">4 numbers only</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  maxLength={4}
+                  value={pinInput}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setPinInput(val);
+                    setPinError('');
+                    setPinSuccessMessage('');
+                  }}
+                  placeholder="••••"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-center font-mono text-xl tracking-widest bg-white"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Used to unlock your station profile without typing your email.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                <span>Confirm 4-Digit Security PIN <span className="text-red-500">*</span></span>
+                {pinInput && pinConfirm && pinInput === pinConfirm && (
+                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Matches
+                  </span>
+                )}
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  maxLength={4}
+                  value={pinConfirm}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setPinConfirm(val);
+                    setPinError('');
+                    setPinSuccessMessage('');
+                  }}
+                  placeholder="••••"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-center font-mono text-xl tracking-widest bg-white"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Re-enter identical 4 numbers to prevent typing errors.
+              </p>
+            </div>
+          </div>
+
+          {pinError && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{pinError}</span>
+            </div>
+          )}
+
+          {pinSuccessMessage && (
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+              <span>{pinSuccessMessage}</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-xs text-slate-400">
+              Note: Restaurant managers can view and reset this PIN if you forget it.
+            </span>
+            <button
+              type="button"
+              onClick={handleSavePinNow}
+              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+              Save PIN Separately
+            </button>
           </div>
         </div>
 

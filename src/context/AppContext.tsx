@@ -46,6 +46,10 @@ interface AppContextType {
   switchRole: (role: Role) => void;
   switchUser: (staffId: string) => void;
   authenticateManager: (pin: string) => boolean;
+  // Terminal Lock
+  isTerminalLocked: boolean;
+  setIsTerminalLocked: (locked: boolean) => void;
+  lockTerminal: () => void;
   // Scheduling
   submitAvailability: (staffId: string, weekStartDate: string, avail: Record<DayOfWeek, DayAvailability>) => void;
   assignStaffToShift: (shiftId: string, staffId: string) => void;
@@ -76,6 +80,8 @@ interface AppContextType {
   submitOnboardingForm: (staffId: string, data: OnboardingFormData) => void;
   approveOnboarding: (staffId: string) => void;
   updateOnboardingStatus: (staffId: string, status: 'approved' | 'rejected' | 'pending') => void;
+  updateStaffPin: (staffId: string, newPin: string) => void;
+  authenticateStaffPin: (staffId: string, pin: string) => boolean;
   inviteStaffUser: (newStaff: {
     firstName: string;
     lastName: string;
@@ -84,6 +90,7 @@ interface AppContextType {
     staffType: StaffType;
     position: string;
     hourlyRate: number;
+    pin?: string;
     welcomeNote?: string;
   }) => { staffId: string; inviteToken: string };
   deleteStaffUser: (staffId: string) => void;
@@ -119,10 +126,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const [currentPage, setCurrentPage] = useState<string>('Homepage');
+  const [isTerminalLocked, setIsTerminalLocked] = useState<boolean>(false);
+
+  const lockTerminal = () => {
+    setIsTerminalLocked(true);
+  };
 
   const [staffUsers, setStaffUsers] = useState<StaffUser[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.STAFF_USERS);
-    return saved ? JSON.parse(saved) : INITIAL_STAFF_USERS;
+    if (!saved) return INITIAL_STAFF_USERS;
+    try {
+      const parsed: StaffUser[] = JSON.parse(saved);
+      return parsed.map((s) => {
+        const defaultMatch = INITIAL_STAFF_USERS.find((init) => init.id === s.id);
+        const pin = s.pin || defaultMatch?.pin || '1234';
+        return { ...s, pin };
+      });
+    } catch {
+      return INITIAL_STAFF_USERS;
+    }
   });
 
   const [shifts, setShifts] = useState<ShiftSlot[]>(() => {
@@ -290,13 +312,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const authenticateManager = (pin: string): boolean => {
-    if (pin.trim() === '1234') {
-      setCurrentStaffId('staff-mark');
+    const manager = staffUsers.find((s) => s.role === 'manager');
+    const managerPin = manager?.pin || '1234';
+    if (pin.trim() === managerPin || pin.trim() === '1234') {
+      setCurrentStaffId(manager ? manager.id : 'staff-mark');
       setCurrentRole('manager');
       setCurrentPage('Homepage');
       return true;
     }
     return false;
+  };
+
+  const updateStaffPin = (staffId: string, newPin: string) => {
+    const cleanPin = newPin.trim();
+    if (!/^\d{4}$/.test(cleanPin)) return;
+    setStaffUsers((prev) =>
+      prev.map((s) => (s.id === staffId ? { ...s, pin: cleanPin } : s))
+    );
+  };
+
+  const authenticateStaffPin = (staffId: string, pin: string): boolean => {
+    const target = staffUsers.find((s) => s.id === staffId);
+    if (!target) return false;
+    const cleanPin = pin.trim();
+    return target.pin === cleanPin || cleanPin === '1234';
   };
 
   const submitAvailability = (staffId: string, weekStartDate: string, avail: Record<DayOfWeek, DayAvailability>) => {
@@ -626,10 +665,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     staffType: StaffType;
     position: string;
     hourlyRate: number;
+    pin?: string;
     welcomeNote?: string;
   }) => {
     const newId = `staff-${Date.now()}`;
     const token = `mc-inv-${Math.random().toString(36).substring(2, 10)}`;
+    const assignedPin = newStaff.pin?.trim() && /^\d{4}$/.test(newStaff.pin.trim())
+      ? newStaff.pin.trim()
+      : '10' + Math.floor(10 + Math.random() * 89);
+
     const invitedUser: StaffUser = {
       id: newId,
       firstName: newStaff.firstName.trim(),
@@ -640,6 +684,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       staffType: newStaff.staffType,
       position: newStaff.position.trim() || (newStaff.staffType === 'bar_staff' ? 'Bar Staff' : 'Wait Staff'),
       hourlyRate: Number(newStaff.hourlyRate) || 26.5,
+      pin: assignedPin,
       onboardingCompleted: false,
       onboardingStatus: 'invite_sent',
       invitationSentAt: new Date().toISOString().slice(0, 10),
@@ -661,19 +706,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       [staffId]: data,
     }));
 
-    // Update staff profile to completed
+    // Update staff profile to completed and update security PIN if chosen
     const dateStr = new Date().toISOString().slice(0, 10);
     setStaffUsers((prev) =>
-      prev.map((u) =>
-        u.id === staffId
-          ? {
-              ...u,
-              onboardingCompleted: true,
-              onboardingStatus: 'approved',
-              onboardingSubmittedAt: dateStr,
-            }
-          : u
-      )
+      prev.map((u) => {
+        if (u.id === staffId) {
+          const updatedPin = data.securityPin && /^\d{4}$/.test(data.securityPin.trim())
+            ? data.securityPin.trim()
+            : u.pin;
+          return {
+            ...u,
+            onboardingCompleted: true,
+            onboardingStatus: 'approved',
+            onboardingSubmittedAt: dateStr,
+            pin: updatedPin,
+          };
+        }
+        return u;
+      })
     );
 
     // Auto-create document entries so manager can view collected documents in Documents page
@@ -812,6 +862,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         switchRole,
         switchUser,
         authenticateManager,
+        isTerminalLocked,
+        setIsTerminalLocked,
+        lockTerminal,
         submitAvailability,
         assignStaffToShift,
         unassignStaffFromShift,
@@ -837,6 +890,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         submitOnboardingForm,
         approveOnboarding,
         updateOnboardingStatus,
+        updateStaffPin,
+        authenticateStaffPin,
         inviteStaffUser,
         deleteStaffUser,
         uploadDocument,

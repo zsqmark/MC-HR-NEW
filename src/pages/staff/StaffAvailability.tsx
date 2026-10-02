@@ -196,7 +196,7 @@ export const StaffAvailability: React.FC = () => {
                 <div key={day} className="flex flex-col bg-white">
                   {/* Day Header */}
                   <div
-                    className={`p-3 border-b border-slate-200 text-center ${
+                    className={`p-2.5 sm:p-3 border-b border-slate-200 text-center flex md:flex-col items-center justify-between md:justify-center ${
                       isWeekend ? 'bg-orange-50/60' : 'bg-slate-100/70'
                     }`}
                   >
@@ -206,8 +206,8 @@ export const StaffAvailability: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Shifts Toggles */}
-                  <div className="p-3 space-y-3 flex-1 flex flex-col justify-between">
+                  {/* Shifts Toggles: 2 columns on mobile, vertical stack on desktop */}
+                  <div className="p-3 grid grid-cols-2 gap-2.5 md:flex md:flex-col md:space-y-3 flex-1">
                     {/* Shift 1: Lunch */}
                     <button
                       type="button"

@@ -42,6 +42,7 @@ export const ManagerSchedule: React.FC = () => {
 
   const [showWeeklyExportModal, setShowWeeklyExportModal] = useState(false);
   const [activeView, setActiveView] = useState<'csv_grid' | 'calendar_board'>('csv_grid');
+  const [mobileDayFilter, setMobileDayFilter] = useState<DayOfWeek | 'ALL'>('MON');
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>('MON');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newShiftDay, setNewShiftDay] = useState<DayOfWeek>('MON');
@@ -118,9 +119,6 @@ export const ManagerSchedule: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Manager Weekly Schedule
           </h1>
-          <p className="text-xs text-slate-500 font-medium">
-            Modeled after 7shifts & Malaya Corner roster. Staff availabilities reflect shift start times; finish times are flexible suggestions based on trade & closing duties.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -400,17 +398,61 @@ export const ManagerSchedule: React.FC = () => {
       {/* VIEW 2: Weekly Day Columns (Interactive Assignment Board) */}
       {activeView === 'calendar_board' && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <span className="font-bold text-sm text-slate-900">
-              Interactive Shift Assigner: Assign Staff Based on Availability
-            </span>
-            <span className="text-xs text-slate-500">
-              Lunch window: 11:00am – 2:30pm • Dinner window: 4:30pm – 10:00pm
-            </span>
+          <div className="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span className="font-bold text-sm text-slate-900 block">
+                Interactive Shift Assigner: Assign Staff Based on Availability
+              </span>
+              <span className="text-xs text-slate-500">
+                Lunch: 11:00am – 2:30pm • Dinner: 4:30pm – 10:00pm
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-medium text-slate-500 hidden sm:inline">
+                Total {shifts.length} slots scheduled
+              </span>
+            </div>
+          </div>
+
+          {/* Mobile Horizontal Day Quick Switcher (< md) */}
+          <div className="md:hidden p-2.5 bg-slate-100/70 border-b border-slate-200 overflow-x-auto flex items-center gap-1.5 scrollbar-none">
+            <button
+              type="button"
+              onClick={() => setMobileDayFilter('ALL')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                mobileDayFilter === 'ALL'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+              }`}
+            >
+              All 7 Days ({shifts.length})
+            </button>
+            {DAYS.map((d) => {
+              const count = shifts.filter((s) => s.day === d).length;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setMobileDayFilter(d)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
+                    mobileDayFilter === d
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                  }`}
+                >
+                  <span>{d}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    mobileDayFilter === d ? 'bg-indigo-800 text-white' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-7 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            {DAYS.map((day) => {
+            {DAYS.filter((day) => mobileDayFilter === 'ALL' || mobileDayFilter === day).map((day) => {
               const dayShifts = shifts.filter((s) => s.day === day);
               const lunchShifts = dayShifts.filter((s) => s.shiftType === 'lunch');
               const dinnerShifts = dayShifts.filter((s) => s.shiftType === 'dinner');
@@ -418,8 +460,24 @@ export const ManagerSchedule: React.FC = () => {
               return (
                 <div key={day} className="flex flex-col bg-white min-h-[350px]">
                   {/* Day Header */}
-                  <div className="p-3 bg-slate-100 border-b border-slate-200 text-center font-bold text-sm text-slate-800">
-                    {day}
+                  <div className="p-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between md:justify-center text-center">
+                    <div>
+                      <span className="font-bold text-sm text-slate-800">{day}</span>
+                      <span className="text-[10px] text-slate-400 font-normal ml-1.5 md:hidden">
+                        ({dayShifts.length} shifts)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewShiftDay(day);
+                        setShowAddModal(true);
+                      }}
+                      className="md:hidden text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-white px-2 py-1 rounded-md border border-indigo-200 shadow-2xs"
+                    >
+                      <Plus className="w-3 h-3" />
+                      Add Shift
+                    </button>
                   </div>
 
                   <div className="p-2.5 space-y-4 flex-1">

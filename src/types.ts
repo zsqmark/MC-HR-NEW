@@ -17,6 +17,7 @@ export interface StaffUser {
   position: string; // e.g. 'Bar Staff', 'Wait Staff', 'Shift Supervisor', 'General Manager'
   avatar?: string;
   hourlyRate: number;
+  pin: string; // 4-digit security PIN for workforce terminal login & sign-in
   onboardingCompleted: boolean;
   onboardingSubmittedAt?: string;
   onboardingStatus: 'not_started' | 'pending_review' | 'approved' | 'revision_requested' | 'invite_sent';
@@ -157,6 +158,7 @@ export interface OnboardingFormData {
   q13_foodHandlerDoc?: UploadedFileMeta;
   q14_tfnDoc?: UploadedFileMeta;
   q15_foodHygieneCert?: UploadedFileMeta;
+  securityPin?: string; // 4-digit security PIN chosen during onboarding
 }
 
 export interface RestaurantDocument {

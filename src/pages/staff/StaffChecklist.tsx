@@ -165,9 +165,6 @@ export const StaffChecklist: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Role-Based Daily Checklists
           </h1>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Distinct checklist sets for <strong className="text-slate-700">Bar Staff</strong> and <strong className="text-slate-700">Wait Staff</strong>. Bar staff are certified to complete both stations.
-          </p>
         </div>
 
         {/* Progress pill for active set */}
